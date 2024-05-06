@@ -106,7 +106,7 @@ def test_get_assessment_data_from_lbx_parcel_id():
 # ----------------------------
 
 # Assign your LightBox API key
-lightbox_api_key = 'ATFY7foMHsxT2wsgBD5Ovmwy6YvPWtDh'
+lightbox_api_key = ''
 
 # -------------------
 # Geocode Address
@@ -114,6 +114,7 @@ lightbox_api_key = 'ATFY7foMHsxT2wsgBD5Ovmwy6YvPWtDh'
 
 # Specify the address to geocode
 address = '25482 Buckwood Land Forest, Ca, 92630'
+print("address:", address)
 
 # Geocode the specified address
 address_search_data = geocode_address(lightbox_api_key, address)
@@ -153,5 +154,5 @@ for assessment_id in assessment_ids:
 
 # Perform tests to verify the response status of the geocode_address function
 test_geocode_address_response_status(lightbox_api_key)
-test_get_parcel_data_from_lbx_address_id()
-test_get_assessment_data_from_lbx_parcel_id()
+test_get_parcel_data_from_lbx_address_id(lightbox_api_key)
+test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key)
