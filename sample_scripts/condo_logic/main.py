@@ -163,8 +163,7 @@ print("address:", address)
 address_search_data = geocode_address(lightbox_api_key, address)
 
 # Print the geocoded address data in a readable JSON format
-for address in address_search_data.json()['addresses']:
-    print("address_id:", address['id'])
+print(json.dumps(address_search_data.json(), indent=4))
 
 # -------------------
 # Gather parcel data
@@ -174,9 +173,7 @@ for address in address_search_data.json()['addresses']:
 parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_search_data.json()['addresses'][0]['id'])
 
 # Print the parcel data in a readable JSON format
-parcel_ids = [parcel['id'] for parcel in parcel_data.json()['parcels']]
-for parcel_id in parcel_ids:
-    print("parcel_id:", parcel_id)
+print(json.dumps(parcel_data.json(), indent=4))
 
 # ----------------------------
 # Gather assessment data
@@ -184,9 +181,7 @@ for parcel_id in parcel_ids:
 assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_data.json()['parcels'][0]['id'])
 
 # Print the assessment data in a readable JSON format
-assessment_ids = [assessment['id'] for assessment in assessment_data.json()['assessments']]
-for assessment_id in assessment_ids:
-    print("assessment_id:", assessment_id)
+print(json.dumps(assessment_data.json(), indent=4))
 
 
 
