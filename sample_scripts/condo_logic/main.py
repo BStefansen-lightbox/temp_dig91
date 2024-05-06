@@ -39,11 +39,16 @@ def get_parcel_data_from_lbx_address_id(lightbox_api_key: str, lbx_address_id: s
     Returns a dictionary containing the parcel data for the specified address.
     """
 
-    # Construct the URL
-    url = f'https://api.lightboxre.com/v1/parcels/_on/address/us/{lbx_address_id}'
+    # API endpoint configuration
+    BASE_URL = "https://api.lightboxre.com/v1"
+    ENDPOINT = f"/parcels/_on/address/us/{lbx_address_id}"
+    URL = BASE_URL + ENDPOINT
+
+    # Setting up request parameters and headers
+    headers = {'x-api-key': lightbox_api_key}
 
     # Make the request
-    parcel_data = requests.get(url, headers={'x-api-key': lightbox_api_key})
+    parcel_data = requests.get(URL, headers=headers)
     
     # Return the parcel data
     return parcel_data
@@ -54,11 +59,16 @@ def get_assessment_data_from_lbx_parcel_id(lightbox_api_key: str, lbx_parcel_id:
     Returns a dictionary containing the assessment data for the specified parcel.
     """
 
-    # Construct the URL
-    url = f'https://api.lightboxre.com/v1/assessments/_on/parcel/us/{lbx_parcel_id}'
+    # API endpoint configuration
+    BASE_URL = "https://api.lightboxre.com/v1"
+    ENDPOINT = f"/assessments/_on/parcel/us/{lbx_parcel_id}"
+    URL = BASE_URL + ENDPOINT
+
+    # Setting up request parameters and headers
+    headers = {'x-api-key': lightbox_api_key}
 
     # Make the request
-    assessment_data = requests.get(url, headers={'x-api-key': lightbox_api_key})
+    assessment_data = requests.get(URL, headers=headers)
     
     # Return the assessment data
     return assessment_data
