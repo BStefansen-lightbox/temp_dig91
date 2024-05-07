@@ -2,6 +2,7 @@ import requests
 import json
 from typing import Dict
 
+
 # ----------------------------
 # Function Definitions
 # ----------------------------
@@ -32,6 +33,7 @@ def geocode_address(lightbox_api_key: str, address: str) -> Dict:
     
     # Returning the geocoded address information
     return geocoder_data
+
 
 # Test for the get_parcel_from_lbx_address_id() function
 def get_parcel_data_from_address_coordinates(lightbox_api_key: str, country_code: str, address_coordinates: str) -> Dict:
@@ -74,6 +76,7 @@ def get_assessment_data_from_lbx_parcel_id(lightbox_api_key: str, lbx_parcel_id:
     # Return the assessment data
     return assessment_data
 
+
 # Function to test the response status of the geocode_address function.
 def test_geocode_address_response_status(lightbox_api_key: str) -> None:
     """
@@ -103,6 +106,7 @@ def test_geocode_address_response_status(lightbox_api_key: str) -> None:
     address_search_data = geocode_address(lightbox_api_key, address)
     assert address_search_data.status_code == 404, f"Expected status code 404, but got {address_search_data.status_code}"
 
+
 # Test the get_parcel_data_from_address_coordinates function
 def test_get_parcel_data_from_address_coordinates(lightbox_api_key):
     """
@@ -128,6 +132,7 @@ def test_get_parcel_data_from_address_coordinates(lightbox_api_key):
     # Test for an unsuccessful request due to an invalid API key (HTTP status code 401)
     parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key+"foobar", country_code, address_coordinates)
     assert parcel_data.status_code == 401, f"Expected status code 401, but got {parcel_data.status_code}"
+
 
 # Test the get_parcel_data_from_lbx_parcel_id function
 def test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key):
@@ -157,6 +162,7 @@ def test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key):
     assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key+"foobar", parcel_id)
     assert assessment_data.status_code == 401, f"Expected status code 401, but got {assessment_data.status_code}"
 
+
 # ----------------------------
 # API Usage
 # ----------------------------
@@ -178,7 +184,6 @@ parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country
 assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_data.json()["parcels"][0]["id"])
 
 
-
 # --------------------
 # Print collected data
 # --------------------
@@ -189,8 +194,6 @@ print(json.dumps(address_search_data.json(), indent=4))
 print(json.dumps(parcel_data.json(), indent=4))
 # Print the assessment data in a readable JSON format
 print(json.dumps(assessment_data.json(), indent=4))
-
-
 
 
 # ----------------------------
