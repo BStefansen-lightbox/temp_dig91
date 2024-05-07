@@ -24,8 +24,8 @@ def geocode_address(lightbox_api_key: str, address: str) -> Dict:
     URL = BASE_URL + ENDPOINT
 
     # Setting up request parameters and headers
-    params = {'text': address}
-    headers = {'x-api-key': lightbox_api_key}
+    params = {"text": address}
+    headers = {"x-api-key": lightbox_api_key}
 
     # Sending request to the LightBox API
     geocoder_data = requests.get(URL, params=params, headers=headers)
@@ -34,21 +34,22 @@ def geocode_address(lightbox_api_key: str, address: str) -> Dict:
     return geocoder_data
 
 # Test for the get_parcel_from_lbx_address_id() function
-def get_parcel_data_from_lbx_address_id(lightbox_api_key: str, lbx_address_id: str) -> Dict:
+def get_parcel_data_from_address_coordinates(lightbox_api_key: str, country_code: str, address_coordinates: str) -> Dict:
     """
     Returns a dictionary containing the parcel data for the specified address.
     """
 
     # API endpoint configuration
     BASE_URL = "https://api.lightboxre.com/v1"
-    ENDPOINT = f"/parcels/_on/address/us/{lbx_address_id}"
+    ENDPOINT = f"/parcels/{country_code}/geometry"
     URL = BASE_URL + ENDPOINT
 
     # Setting up request parameters and headers
-    headers = {'x-api-key': lightbox_api_key}
+    params = {"wkt": address_coordinates}
+    headers = {"x-api-key": lightbox_api_key}
 
     # Make the request
-    parcel_data = requests.get(URL, headers=headers)
+    parcel_data = requests.get(URL, params=params, headers=headers)
     
     # Return the parcel data
     return parcel_data
@@ -65,7 +66,7 @@ def get_assessment_data_from_lbx_parcel_id(lightbox_api_key: str, lbx_parcel_id:
     URL = BASE_URL + ENDPOINT
 
     # Setting up request parameters and headers
-    headers = {'x-api-key': lightbox_api_key}
+    headers = {"x-api-key": lightbox_api_key}
 
     # Make the request
     assessment_data = requests.get(URL, headers=headers)
@@ -83,48 +84,49 @@ def test_geocode_address_response_status(lightbox_api_key: str) -> None:
     """
 
     # Test for a successful request (HTTP status code 200)
-    address = '25482 Buckwood Land Forest, Ca, 92630'
+    address = "25482 Buckwood Land Forest, Ca, 92630"
     address_search_data = geocode_address(lightbox_api_key, address)
     assert address_search_data.status_code == 200, f"Expected status code 200, but got {address_search_data.status_code}"
 
     # Test for an unsuccessful request due to an empty address (HTTP status code 400)
-    address = ''  # No address specified
+    address = ""  # No address specified
     address_search_data = geocode_address(lightbox_api_key, address)
     assert address_search_data.status_code == 400, f"Expected status code 400, but got {address_search_data.status_code}"
 
     # Test for an unsuccessful request due to an invalid API key (HTTP status code 401)
-    address = '25482 Buckwood Land Forest, Ca, 92630'
+    address = "25482 Buckwood Land Forest, Ca, 92630"
     address_search_data = geocode_address("My-LightBox-Key", address)  # Invalid API key
     assert address_search_data.status_code == 401, f"Expected status code 401, but got {address_search_data.status_code}"
 
     # Test for an unsuccessful request due to an incomplete address (HTTP status code 404)
-    address = '25482 Buckwood Land Forest'  # Incomplete address
+    address = "25482 Buckwood Land Forest"  # Incomplete address
     address_search_data = geocode_address(lightbox_api_key, address)
     assert address_search_data.status_code == 404, f"Expected status code 404, but got {address_search_data.status_code}"
 
-# Test the get_parcel_data_from_lbx_address_id function
-def test_get_parcel_data_from_lbx_address_id(lightbox_api_key):
+# Test the get_parcel_data_from_address_coordinates function
+def test_get_parcel_data_from_address_coordinates(lightbox_api_key):
     """
-    Test the get_parcel_data_from_lbx_address_id function
+    Test the get_parcel_data_from_address_coordinates function
     
     Args:
         lightbox_api_key (str): The LightBox API key
     """
 
     # Test for a successful request (HTTP status code 200)
-    address = '25482 Buckwood Land Forest, Ca, 92630'
+    address = "25482 Buckwood Land Forest, Ca, 92630"
+    country_code = "us"
     address_search_data = geocode_address(lightbox_api_key, address)
-    address_id = address_search_data.json()['addresses'][0]['id']
-    parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_id)
+    address_coordinates = address_search_data.json()["addresses"][0]["location"]["representativePoint"]["geometry"]["wkt"]
+    parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country_code, address_coordinates)
     assert parcel_data.status_code == 200, f"Expected status code 200, but got {parcel_data.status_code}"
 
     # Test for an unsuccessful request due to an invalid address ID (HTTP status code 400)
-    address_id = '1234567890'
-    parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_id)
+    address_coordinates = "foobar"
+    parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country_code, address_coordinates)
     assert parcel_data.status_code == 400, f"Expected status code 400, but got {parcel_data.status_code}"
 
     # Test for an unsuccessful request due to an invalid API key (HTTP status code 401)
-    parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key+"foobar", address_id)
+    parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key+"foobar", country_code, address_coordinates)
     assert parcel_data.status_code == 401, f"Expected status code 401, but got {parcel_data.status_code}"
 
 # Test the get_parcel_data_from_lbx_parcel_id function
@@ -137,21 +139,22 @@ def test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key):
     """
 
     # Test for a successful request (HTTP status code 200)
-    address = '25482 Buckwood Land Forest, Ca, 92630'
+    address = "25482 Buckwood Land Forest, Ca, 92630"
+    country_code = "us"
     address_search_data = geocode_address(lightbox_api_key, address)
-    address_id = address_search_data.json()['addresses'][0]['id']
-    parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_id)
-    parcel_id = parcel_data.json()["parcels"][0]['id']
+    address_coordinates = address_search_data.json()["addresses"][0]["location"]["representativePoint"]["geometry"]["wkt"]
+    parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country_code, address_coordinates)
+    parcel_id = parcel_data.json()["parcels"][0]["id"]
     assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_id)
     assert assessment_data.status_code == 200, f"Expected status code 200, but got {assessment_data.status_code}"
 
     # Test for an unsuccessful request due to an invalid parcel ID (HTTP status code 400)
-    address_id = '1234567890'
-    parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_id)
-    assert parcel_data.status_code == 400, f"Expected status code 400, but got {parcel_data.status_code}"
+    parcel_id = "1234567890"
+    assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_id)
+    assert assessment_data.status_code == 400, f"Expected status code 400, but got {assessment_data.status_code}"
 
     # Test for an unsuccessful request (HTTP status code 401)
-    assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key+"foobar", '1234567890')
+    assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key+"foobar", parcel_id)
     assert assessment_data.status_code == 401, f"Expected status code 401, but got {assessment_data.status_code}"
 
 # ----------------------------
@@ -159,37 +162,31 @@ def test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key):
 # ----------------------------
 
 # Assign your LightBox API key
-lightbox_api_key = ''
-
-# -------------------
-# Geocode Address
-# -------------------
+lightbox_api_key = ""
 
 # Specify the address to geocode
-address = '25482 Buckwood Land Forest, Ca, 92630'
-print("address:", address)
+address = "25482 Buckwood Land Forest, Ca, 92630"
 
 # Geocode the specified address
 address_search_data = geocode_address(lightbox_api_key, address)
 
+# Get the parcel data from the geocoded address
+country_code = "us"
+parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country_code, address_search_data.json()["addresses"][0]["location"]["representativePoint"]["geometry"]["wkt"])
+
+# Get the assessment data from the parcel ID
+assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_data.json()["parcels"][0]["id"])
+
+
+
+# --------------------
+# Print collected data
+# --------------------
+
 # Print the geocoded address data in a readable JSON format
 print(json.dumps(address_search_data.json(), indent=4))
-
-# -------------------
-# Gather parcel data
-# -------------------
-
-# Get the parcel data from the geocoded address
-parcel_data = get_parcel_data_from_lbx_address_id(lightbox_api_key, address_search_data.json()['addresses'][0]['id'])
-
 # Print the parcel data in a readable JSON format
 print(json.dumps(parcel_data.json(), indent=4))
-
-# ----------------------------
-# Gather assessment data
-# ----------------------------
-assessment_data = get_assessment_data_from_lbx_parcel_id(lightbox_api_key, parcel_data.json()['parcels'][0]['id'])
-
 # Print the assessment data in a readable JSON format
 print(json.dumps(assessment_data.json(), indent=4))
 
@@ -202,5 +199,5 @@ print(json.dumps(assessment_data.json(), indent=4))
 
 # Perform tests to verify the response status of the geocode_address function
 test_geocode_address_response_status(lightbox_api_key)
-test_get_parcel_data_from_lbx_address_id(lightbox_api_key)
+test_get_parcel_data_from_address_coordinates(lightbox_api_key)
 test_get_assessment_data_from_lbx_parcel_id(lightbox_api_key)
