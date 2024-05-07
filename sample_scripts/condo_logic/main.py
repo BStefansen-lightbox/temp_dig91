@@ -166,12 +166,12 @@ lightbox_api_key = ""
 
 # Specify the address to geocode
 address = "25482 Buckwood Land Forest, Ca, 92630"
+country_code = "us" # 'us' for the United States
 
 # Geocode the specified address
 address_search_data = geocode_address(lightbox_api_key, address)
 
 # Get the parcel data from the geocoded address
-country_code = "us"
 parcel_data = get_parcel_data_from_address_coordinates(lightbox_api_key, country_code, address_search_data.json()["addresses"][0]["location"]["representativePoint"]["geometry"]["wkt"])
 
 # Get the assessment data from the parcel ID
